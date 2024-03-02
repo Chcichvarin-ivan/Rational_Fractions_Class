@@ -101,17 +101,21 @@ istream& operator>>(istream& input, Rational& fraction) {
 } 
 //+ binary operation
 Rational operator+(Rational left, Rational right) {
-    int numerator = left.Numerator() * right.Denominator() + right.Numerator() * left.Denominator();
-    int denominator = left.Denominator() * right.Denominator();
-    // Создаём и возвращаем дробь с заданным числителем и знаменателем
-    return Rational{numerator, denominator};
+    return left += right;
 }
 //- binary operation
 Rational operator-(Rational left, Rational right) {
-    int numerator = left.Numerator() * right.Denominator() - right.Numerator() * left.Denominator();
-    int denominator = left.Denominator() * right.Denominator();
-    // Создаём и возвращаем дробь с заданным числителем и знаменателем
-    return Rational{numerator, denominator};
+    return left -= right;
+}
+
+//* binary operation
+Rational operator*(Rational left, Rational right) {
+    return left *= right;
+}
+
+// / binary operation
+Rational operator/(Rational left, Rational right) {
+    return left /= right;
 }
 
 //+ unary operation
