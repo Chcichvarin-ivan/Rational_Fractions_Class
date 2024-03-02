@@ -129,7 +129,7 @@ void RunTestImpl(const TestFunc& func, const string& test_name) {
 
 #define RUN_TEST(func) RunTestImpl(func, #func) 
 
-void TestInput() {
+void TestMyInput() {
     istringstream input;
     input.str("1/3"s);
 
@@ -157,7 +157,7 @@ void TestInput() {
     ASSERT_EQUAL_HINT(fract.Denominator(), 1,"error when numerator is greater then denominator");
 }
 
-void TestOutput() {
+void TestMyOutput() {
     Rational fract = Rational{1,3};
     ostringstream output;
     output << fract;
@@ -257,8 +257,8 @@ void TestUnaryMinus(){
 
 
 void TestRational() {
-    RUN_TEST(TestInput);    
-    RUN_TEST(TestOutput);
+    RUN_TEST(TestMyInput);    
+    RUN_TEST(TestMyOutput);
     RUN_TEST(TestAdition);
     RUN_TEST(TestUnaryPlus);
     RUN_TEST(TestUnaryMinus);
