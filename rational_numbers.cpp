@@ -14,13 +14,7 @@ public:
     }
 
     Rational(int in_numerator, int in_denomenator):numerator_(in_numerator),denominator_(in_denomenator){
-        int gcd_num_denum = gcd(numerator_, in_denomenator);
-        numerator_ = numerator_/gcd_num_denum;
-        denominator_ = denominator_/gcd_num_denum;
-        if(denominator_ < 0){
-            denominator_ = -1*denominator_;
-            numerator_ = -1*numerator_; 
-        }
+        Normalize();
     }
     
     int Numerator() const {
@@ -31,11 +25,45 @@ public:
         return denominator_;
     }
 
+    Rational& operator+=(Rational right) {
+        // Результат операции сохраняется в текущем экземпляре класса
+        numerator_ = numerator_* right.Denominator() + right.Numerator() * denominator_;
+        denominator_ = denominator_* right.Denominator();
+        Normalize();
+        // return *this позволяет вернуть ссылку на текущий объект
+        return *this;
+    }
+
+    Rational& operator-=(Rational right) {
+        // Результат операции сохраняется в текущем экземпляре класса
+        numerator_ = numerator_* right.Denominator() - right.Numerator() * denominator_;
+        denominator_ = denominator_* right.Denominator();
+        Normalize();
+        // return *this позволяет вернуть ссылку на текущий объект
+        return *this;
+    }
+    
+    Rational& operator*=(Rational right) {
+        // Результат операции сохраняется в текущем экземпляре класса
+        numerator_ = numerator_*right.Numerator();
+        denominator_ = denominator_* right.Denominator();
+        Normalize();
+        // return *this позволяет вернуть ссылку на текущий объект
+        return *this;
+    }
+    
+    Rational& operator/=(Rational right) {
+        // Результат операции сохраняется в текущем экземпляре класса
+        numerator_ = numerator_*right.Denominator();
+        denominator_ = denominator_* right.Numerator();
+        Normalize();
+        // return *this позволяет вернуть ссылку на текущий объект
+        return *this;
+    }
 
 private:
     int numerator_ = 0;
     int denominator_ = 1;
-
     int gcd(int a, int b){       
         int c;
         while (b) {
@@ -44,6 +72,16 @@ private:
             b = c;        
         }
     return abs(a);
+    }
+
+    void Normalize(){
+        int gcd_num_denum = gcd(numerator_, denominator_);
+        numerator_ = numerator_/gcd_num_denum;
+        denominator_ = denominator_/gcd_num_denum;
+        if(denominator_ < 0){
+            denominator_ = -1*denominator_;
+            numerator_ = -1*numerator_; 
+        }
     }
 };
 
@@ -255,6 +293,122 @@ void TestUnaryMinus(){
     ASSERT_EQUAL(fract.Denominator(), 3);
 }
 
+void TestAdditionAssignment(){
+    Rational fract = Rational{1,3};
+    fract += Rational{2,3};
+    ASSERT_EQUAL(fract.Numerator(), 1);
+    ASSERT_EQUAL(fract.Denominator(), 1);
+
+    fract = Rational{1,5};
+    fract += Rational{2,3};
+    ASSERT_EQUAL(fract.Numerator(), 13);
+    ASSERT_EQUAL(fract.Denominator(), 15);
+    
+    fract = Rational{-1,4};
+    fract += Rational{2,3};
+    ASSERT_EQUAL(fract.Numerator(), 5);
+    ASSERT_EQUAL(fract.Denominator(), 12);
+
+    fract = Rational{-3,4};
+    fract += Rational{2,3};
+    ASSERT_EQUAL(fract.Numerator(), -1);
+    ASSERT_EQUAL(fract.Denominator(), 12);
+
+    fract = Rational{1,4};
+    fract += Rational{-2,3};
+    ASSERT_EQUAL(fract.Numerator(), -5);
+    ASSERT_EQUAL(fract.Denominator(), 12);
+
+    fract = Rational{1,4};
+    fract += Rational{-1,4};
+    ASSERT_EQUAL(fract.Numerator(), 0);
+    ASSERT_EQUAL(fract.Denominator(), 1);
+
+
+    fract = Rational{156,396};
+    fract += Rational{-339,1289};
+    ASSERT_EQUAL(fract.Numerator(), 5570);
+    ASSERT_EQUAL(fract.Denominator(), 42537);
+}
+
+void TestSubtractionAssignment(){
+    Rational fract = Rational{1,3};
+    fract -= Rational{2,3};
+    ASSERT_EQUAL(fract.Numerator(), -1);
+    ASSERT_EQUAL(fract.Denominator(), 3);
+
+    fract = Rational{1,5};
+    fract -= Rational{2,3};
+    ASSERT_EQUAL(fract.Numerator(), -7);
+    ASSERT_EQUAL(fract.Denominator(), 15);
+    
+    fract = Rational{-1,4};
+    fract -= Rational{2,3};
+    ASSERT_EQUAL(fract.Numerator(), -11);
+    ASSERT_EQUAL(fract.Denominator(), 12);
+
+    fract = Rational{-3,4};
+    fract -= Rational{2,3};
+    ASSERT_EQUAL(fract.Numerator(), -17);
+    ASSERT_EQUAL(fract.Denominator(), 12);
+
+    fract = Rational{1,4};
+    fract -= Rational{-2,3};
+    ASSERT_EQUAL(fract.Numerator(), 11);
+    ASSERT_EQUAL(fract.Denominator(), 12);
+
+    fract = Rational{1,4};
+    fract -= Rational{1,4};
+    ASSERT_EQUAL(fract.Numerator(), 0);
+    ASSERT_EQUAL(fract.Denominator(), 1);
+
+
+    fract = Rational{156,396};
+    fract -= Rational{339,1289};
+    ASSERT_EQUAL(fract.Numerator(), 5570);
+    ASSERT_EQUAL(fract.Denominator(), 42537);
+}
+
+void TestMultiplicationAssignment(){
+    Rational fract = Rational{1,3};
+    fract *= Rational{2,3};
+    ASSERT_EQUAL(fract.Numerator(), 2);
+    ASSERT_EQUAL(fract.Denominator(), 9);
+
+    fract = Rational{0,5};
+    fract *= Rational{2,3};
+    ASSERT_EQUAL(fract.Numerator(), 0);
+    ASSERT_EQUAL(fract.Denominator(), 1);
+
+    fract = Rational{-5,4};
+    fract *= Rational{2,3};
+    ASSERT_EQUAL(fract.Numerator(), -5);
+    ASSERT_EQUAL(fract.Denominator(), 6);
+    
+    fract = Rational{-156,396};
+    fract *= Rational{339,1289};
+    ASSERT_EQUAL(fract.Numerator(), -1469);
+    ASSERT_EQUAL(fract.Denominator(), 14179);
+
+}
+
+void TestDevisionAssignment(){
+    Rational fract = Rational{1,3};
+    fract /= Rational{2,3};
+    ASSERT_EQUAL(fract.Numerator(), 1);
+    ASSERT_EQUAL(fract.Denominator(), 2);
+
+    fract = Rational{0,5};
+    fract /= Rational{2,3};
+    ASSERT_EQUAL(fract.Numerator(), 0);
+    ASSERT_EQUAL(fract.Denominator(), 1);
+
+    fract = Rational{-5,4};
+    fract /= Rational{2,3};
+    ASSERT_EQUAL(fract.Numerator(), -15);
+    ASSERT_EQUAL(fract.Denominator(), 8);
+    
+}
 
 void TestRational() {
     RUN_TEST(TestMyInput);    
@@ -262,6 +416,10 @@ void TestRational() {
     RUN_TEST(TestAdition);
     RUN_TEST(TestUnaryPlus);
     RUN_TEST(TestUnaryMinus);
+    RUN_TEST(TestAdditionAssignment);
+    RUN_TEST(TestSubtractionAssignment);
+    RUN_TEST(TestMultiplicationAssignment);
+    RUN_TEST(TestDevisionAssignment);
  
 }
 int main() {
