@@ -127,7 +127,47 @@ Rational operator+(Rational in_operand) {
 Rational operator-(Rational in_operand) {
     return {-in_operand.Numerator(),in_operand.Denominator()};
 }
-
+// == operation
+bool operator==(Rational left, Rational right) {
+    return left.Numerator() == right.Numerator() && 
+           left.Denominator() == right.Denominator();
+} 
+// != operation
+bool operator!=(Rational left, Rational right) {
+    return !(left == right);
+} 
+// < operation
+bool operator<(Rational left, Rational right) {
+    if(left.Denominator() == right.Denominator()){
+        return (left.Numerator() < right.Numerator());
+    }else{
+        return (left.Numerator()*right.Denominator() < right.Numerator()*left.Denominator());
+    }
+} 
+// > operation
+bool operator>(Rational left, Rational right) {
+    if(left.Denominator() == right.Denominator()){
+        return (left.Numerator() > right.Numerator());
+    }else{
+        return (left.Numerator()*right.Denominator() > right.Numerator()*left.Denominator());
+    }
+} 
+// <= operation
+bool operator<=(Rational left, Rational right) {
+    if(left.Denominator() == right.Denominator()){
+        return (left.Numerator() <= right.Numerator());
+    }else{
+        return (left.Numerator()*right.Denominator() <= right.Numerator()*left.Denominator());
+    }
+} 
+// >= operation
+bool operator>=(Rational left, Rational right) {
+    if(left.Denominator() == right.Denominator()){
+        return (left.Numerator() >= right.Numerator());
+    }else{
+        return (left.Numerator()*right.Denominator() >= right.Numerator()*left.Denominator());
+    }
+} 
 
 void AssertImpl(bool value, const string& expr_str, const string& file, const string& func, unsigned line,
                 const string& hint) {
@@ -414,6 +454,75 @@ void TestDevisionAssignment(){
     
 }
 
+void TestEqual(){
+    Rational fract = Rational{1,3};
+    ASSERT_EQUAL((fract == Rational{1,3}),true);
+
+    ASSERT_EQUAL((fract == Rational{2,3}),false);
+}
+
+void TestNotEqual(){
+    Rational fract = Rational{1,3};
+    ASSERT_EQUAL((fract != Rational{1,3}),false);
+
+    ASSERT_EQUAL((fract != Rational{2,3}),true);
+}
+
+void TestGreater(){
+    Rational fract = Rational{2,3};
+    ASSERT_EQUAL((fract > Rational{1,3}),true);
+
+    ASSERT_EQUAL((fract > Rational{2,3}),false);
+
+    ASSERT_EQUAL((fract > Rational{1,4}),true);
+
+    ASSERT_EQUAL((fract > Rational{3,4}),false);
+
+    ASSERT_EQUAL((fract > 0),true);
+}
+
+void TestLess(){
+    Rational fract = Rational{2,3};
+    ASSERT_EQUAL((fract < Rational{1,3}),false);
+
+    ASSERT_EQUAL((fract < Rational{2,3}),false);
+
+    ASSERT_EQUAL((fract < Rational{1,4}),false);
+
+    ASSERT_EQUAL((fract < Rational{3,4}),true);
+
+    ASSERT_EQUAL((fract < 0),false);
+}
+
+void TestGreaterOrEqual(){
+    Rational fract = Rational{2,3};
+    ASSERT_EQUAL((fract >= Rational{1,3}),true);
+
+    ASSERT_EQUAL((fract >= Rational{2,3}),true);
+
+    ASSERT_EQUAL((fract >= Rational{1,4}),true);
+
+    ASSERT_EQUAL((fract >= Rational{3,4}),false);
+
+    ASSERT_EQUAL((fract >= 0),true);
+
+    ASSERT_EQUAL((fract >= -1),true);
+}
+
+void TestLessOrEqual(){
+        Rational fract = Rational{2,3};
+    ASSERT_EQUAL((fract <= Rational{1,3}),false);
+
+    ASSERT_EQUAL((fract <= Rational{2,3}),true);
+
+    ASSERT_EQUAL((fract <= Rational{1,4}),false);
+
+    ASSERT_EQUAL((fract <= Rational{3,4}),true);
+
+    ASSERT_EQUAL((fract <= 0),false);
+    ASSERT_EQUAL((fract <= -1),false);
+}
+
 void TestRational() {
     RUN_TEST(TestMyInput);    
     RUN_TEST(TestMyOutput);
@@ -424,7 +533,12 @@ void TestRational() {
     RUN_TEST(TestSubtractionAssignment);
     RUN_TEST(TestMultiplicationAssignment);
     RUN_TEST(TestDevisionAssignment);
- 
+    RUN_TEST(TestEqual);
+    RUN_TEST(TestNotEqual);
+    RUN_TEST(TestGreater);
+    RUN_TEST(TestLess);
+    RUN_TEST(TestGreaterOrEqual);
+    RUN_TEST(TestLessOrEqual);
 }
 int main() {
     TestRational();
