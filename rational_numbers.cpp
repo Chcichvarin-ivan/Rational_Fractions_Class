@@ -14,6 +14,10 @@ public:
     }
 
     Rational(int in_numerator, int in_denomenator):numerator_(in_numerator),denominator_(in_denomenator){
+        if(denominator_ == 0)
+        {
+             throw  domain_error("denominator shouldnt be zero"s);
+        }
         Normalize();
     }
     
@@ -54,6 +58,10 @@ public:
     
     Rational& operator/=(Rational right) {
         // Результат операции сохраняется в текущем экземпляре класса
+        if(right.Numerator() == 0)
+        {
+            throw invalid_argument("you can't divide by zero"s);
+        }
         numerator_ = numerator_*right.Denominator();
         denominator_ = denominator_* right.Numerator();
         Normalize();
@@ -540,18 +548,34 @@ void TestRational() {
     RUN_TEST(TestGreaterOrEqual);
     RUN_TEST(TestLessOrEqual);
 }
+
 int main() {
     TestRational();
     cout << "Rational testing finished"s << endl;
-    Rational zero;     // Дробь 0/1 = 0
-    const Rational seven(7); // Дробь 7/1 = 7
-    const Rational one_third(1, 3); // Дробь 1/3
-    vector<Rational> numbers;
-    numbers.push_back(Rational{7, 8});
-    // Следующие 2 строки эквивалентны - добавляют в numbers дробь 3/1
-    numbers.push_back(Rational{3});
-    numbers.push_back(3);
-    Rational sum = Rational{1,6} + one_third;
-    // Выведет 1/2
-    cout << sum;
+  
+   try {
+        // При попытке сконструировать дробь с нулевым знаменателем
+        // должно выброситься исключение domain_error
+        const Rational invalid_value{1, 0};
+        // Следующая строка не должна выполниться
+        cout << invalid_value << endl;
+    } catch (const domain_error& e) {
+        cout << "Ошибка: "s << e.what() << endl;
+    }
+
+    try {
+        const Rational three_fifth{3, 5};
+        const Rational zero;
+        cout << three_fifth << " / " << zero << " = " << (three_fifth / zero) << endl;
+    } catch (const invalid_argument& e) {
+        cout << "Ошибка: "s << e.what() << endl;
+    }
+    try {
+        Rational value{3, 5};
+        value /= Rational();
+        // Следующая строка не должна выполниться
+        cout << value << endl;
+    } catch (const invalid_argument& e) {
+        cout << "Ошибка: "s << e.what() << endl;
+    }
 } 
